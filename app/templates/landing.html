@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+	.hero-section {
+		position: relative;
+		text-align: center;
+		padding: 5rem 2rem;
+		background: linear-gradient(135deg, rgba(10, 122, 255, 0.05) 0%, rgba(0, 217, 184, 0.05) 100%);
+		border-radius: 32px;
+		margin-bottom: 3rem;
+		overflow: hidden;
+	}
+
+	.hero-section::before {
+		content: '';
+		position: absolute;
+		top: -50%;
+		right: -20%;
+		width: 500px;
+		height: 500px;
+		background: radial-gradient(circle, rgba(10, 122, 255, 0.1) 0%, transparent 70%);
+		border-radius: 50%;
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.hero-section::after {
+		content: '';
+		position: absolute;
+		bottom: -50%;
+		left: -20%;
+		width: 500px;
+		height: 500px;
+		background: radial-gradient(circle, rgba(0, 217, 184, 0.1) 0%, transparent 70%);
+		border-radius: 50%;
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	@keyframes float {
+		0%, 100% { transform: translate(0, 0) rotate(0deg); }
+		33% { transform: translate(30px, -30px) rotate(120deg); }
+		66% { transform: translate(-20px, 20px) rotate(240deg); }
+	}
+
+	.hero-content {
+		position: relative;
+		z-index: 1;
+	}
+
+	.hero-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1.25rem;
+		background: linear-gradient(135deg, var(--primary-light) 0%, rgba(0, 217, 184, 0.1) 100%);
+		border: 2px solid rgba(10, 122, 255, 0.2);
+		border-radius: 50px;
+		color: var(--primary);
+		font-weight: 600;
+		font-size: 0.875rem;
+		margin-bottom: 2rem;
+	}
+
+	.hero-badge::before {
+		content: '✨';
+		font-size: 1rem;
+	}
+
+	.hero-title {
+		font-family: 'Poppins', sans-serif;
+		font-size: 3.5rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 1.5rem;
+		line-height: 1.2;
+	}
+
+	.hero-subtitle {
+		font-size: 1.5rem;
+		color: var(--gray-700);
+		margin-bottom: 3rem;
+		font-weight: 400;
+	}
+
+	.cta-buttons {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	.cta-buttons .btn {
+		padding: 1rem 2.5rem;
+		font-size: 1.125rem;
+		min-width: 200px;
+	}
+
+	/* Progress Card */
+	.progress-section {
+		background: var(--white);
+		border-radius: 24px;
+		padding: 3rem;
+		box-shadow: var(--shadow-lg);
+		margin-bottom: 3rem;
+		border: 1px solid rgba(10, 122, 255, 0.08);
+	}
+
+	.progress-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.progress-title {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: var(--gray-900);
+	}
+
+	.status-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.25rem;
+		border-radius: 50px;
+		font-weight: 600;
+		font-size: 0.95rem;
+	}
+
+	.status-chip.success {
+		background: linear-gradient(135deg, #E6FAF5 0%, #D1F5EA 100%);
+		color: var(--success);
+		border: 2px solid var(--success);
+	}
+
+	.status-chip.active {
+		background: linear-gradient(135deg, var(--primary-light) 0%, rgba(10, 122, 255, 0.1) 100%);
+		color: var(--primary);
+		border: 2px solid var(--primary);
+	}
+
+	.progress-bar-container {
+		background: var(--gray-100);
+		height: 20px;
+		border-radius: 50px;
+		overflow: hidden;
+		margin-bottom: 1.5rem;
+		position: relative;
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+	}
+
+	.progress-bar-fill {
+		height: 100%;
+		background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+		border-radius: 50px;
+		transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.progress-bar-fill::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+		animation: shimmer 2s infinite;
+	}
+
+	@keyframes shimmer {
+		0% { transform: translateX(-100%); }
+		100% { transform: translateX(100%); }
+	}
+
+	.progress-info {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2rem;
+	}
+
+	.progress-percent {
+		font-size: 2rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.progress-actions {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	/* Features Grid */
+	.features-section {
+		margin-top: 4rem;
+	}
+
+	.features-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+		gap: 2rem;
+	}
+
+	.feature-card {
+		background: var(--white);
+		padding: 2.5rem;
+		border-radius: 24px;
+		box-shadow: var(--shadow-md);
+		text-align: center;
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.feature-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 4px;
+		background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+		transform: scaleX(0);
+		transition: transform 0.4s;
+	}
+
+	.feature-card:hover {
+		transform: translateY(-8px);
+		box-shadow: var(--shadow-xl);
+	}
+
+	.feature-card:hover::before {
+		transform: scaleX(1);
+	}
+
+	.feature-icon {
+		font-size: 3.5rem;
+		margin-bottom: 1.5rem;
+		display: inline-block;
+		animation: bounce 2s infinite;
+	}
+
+	@keyframes bounce {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-10px); }
+	}
+
+	.feature-card:hover .feature-icon {
+		animation: none;
+		transform: scale(1.1);
+		transition: transform 0.3s;
+	}
+
+	.feature-card h3 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--gray-900);
+		margin-bottom: 1rem;
+	}
+
+	.feature-card p {
+		color: var(--gray-700);
+		line-height: 1.8;
+		font-size: 1rem;
+	}
+
+	@media (max-width: 768px) {
+		.hero-title {
+			font-size: 2.5rem;
+		}
+
+		.hero-subtitle {
+			font-size: 1.25rem;
+		}
+
+		.progress-section {
+			padding: 2rem;
+		}
+
+		.features-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+
+<section class="hero-section">
+	<div class="hero-content">
+		<div class="hero-badge">AI-Powered Dermatology</div>
+		<h1 class="hero-title">Natural, Safe Remedies<br>+ AI Support</h1>
+		<p class="hero-subtitle">Your digital skin clinic – Private, Local, and Caring</p>
+		<div class="cta-buttons">
+			{% if patient %}
+				<a class="btn primary" href="/checkups/new/{{ patient.id }}">Start New Checkup</a>
+				<a class="btn outline" href="/patients/{{ patient.id }}">View Records</a>
+			{% else %}
+				<a class="btn primary" href="/patients/new">Register Patient</a>
+				<a class="btn outline" href="/admin">Admin Portal</a>
+			{% endif %}
+		</div>
+	</div>
+</section>
+
+{% if patient %}
+<section class="progress-section">
+	<div class="progress-header">
+		<h2 class="progress-title">👋 Welcome back, {{ patient.name }}!</h2>
+		{% if progress >= 100 %}
+			<div class="status-chip success">✓ Treatment Complete</div>
+		{% else %}
+			<div class="status-chip active">🔄 In Progress</div>
+		{% endif %}
+	</div>
+	
+	<div class="progress-bar-container">
+		<div class="progress-bar-fill" id="progress-fill" style="width: {{ progress }}%;"></div>
+	</div>
+	
+	<div class="progress-info">
+		<div class="progress-percent">{{ progress }}%</div>
+		<div>
+			{% if progress >= 100 %}
+				<p style="color: var(--success); font-weight: 600; font-size: 1.125rem;">🎉 Congratulations! Treatment completed successfully.</p>
+			{% else %}
+				<p style="color: var(--gray-700); font-weight: 500;">Keep following your treatment plan</p>
+			{% endif %}
+		</div>
+	</div>
+	
+	<div class="progress-actions">
+		<a href="/patients/{{ patient.id }}" class="btn outline">📊 View Full History</a>
+		{% if latest_treatment %}
+			<a href="/treatment/report/{{ latest_treatment.id }}" class="btn primary">📋 Treatment Report</a>
+		{% endif %}
+	</div>
+</section>
+{% endif %}
+
+<section class="features-section">
+	<div class="features-grid">
+		<div class="feature-card">
+			<div class="feature-icon">🔬</div>
+			<h3>AI-Powered Analysis</h3>
+			<p>Advanced machine learning models analyze your skin condition with precision and safety, providing accurate diagnosis in seconds.</p>
+		</div>
+		<div class="feature-card">
+			<div class="feature-icon">🌿</div>
+			<h3>Natural Remedies</h3>
+			<p>We recommend proven herbal remedies that enhance your skin's natural healing process without harsh chemicals.</p>
+		</div>
+		<div class="feature-card">
+			<div class="feature-icon">📊</div>
+			<h3>Progress Tracking</h3>
+			<p>Visualize your healing journey with daily updates – automatically adjusted by AI to ensure optimal recovery.</p>
+		</div>
+	</div>
+</section>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		const fill = document.getElementById("progress-fill");
+		if (fill) {
+			setTimeout(() => {
+				fill.style.width = "{{ progress }}%";
+			}, 100);
+		}
+	});
+</script>
+{% endblock %}

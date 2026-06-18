@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+	.register-container {
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.page-header {
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.page-header h2 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 2.75rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 0.75rem;
+	}
+
+	.page-subtitle {
+		color: var(--gray-700);
+		font-size: 1.125rem;
+	}
+
+	.auth-status {
+		background: var(--white);
+		padding: 1rem 1.5rem;
+		border-radius: 16px;
+		text-align: center;
+		margin-bottom: 2rem;
+		box-shadow: var(--shadow-sm);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+	}
+
+	.auth-status a {
+		color: var(--primary);
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.auth-status a:hover {
+		text-decoration: underline;
+	}
+
+	.registration-form {
+		background: var(--white);
+		border-radius: 24px;
+		padding: 3rem;
+		box-shadow: var(--shadow-lg);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+	}
+
+	.form-sections {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+		gap: 3rem;
+		margin-bottom: 2rem;
+	}
+
+	.form-section {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-bottom: 1rem;
+		border-bottom: 2px solid var(--gray-100);
+		margin-bottom: 0.5rem;
+	}
+
+	.section-icon {
+		font-size: 1.75rem;
+	}
+
+	.section-title {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--gray-900);
+	}
+
+	.form-field {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.form-field label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+		font-weight: 600;
+		color: var(--gray-900);
+		font-size: 0.95rem;
+	}
+
+	.form-field label::before {
+		content: '';
+		width: 4px;
+		height: 4px;
+		background: var(--primary);
+		border-radius: 50%;
+	}
+
+	input, textarea, select {
+		width: 100%;
+		padding: 0.875rem 1.25rem;
+		border: 2px solid var(--gray-300);
+		border-radius: 12px;
+		font-size: 1rem;
+		font-family: inherit;
+		transition: all 0.3s;
+		background: var(--white);
+	}
+
+	input:focus, textarea:focus, select:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 4px rgba(10, 122, 255, 0.1);
+	}
+
+	textarea {
+		resize: vertical;
+		min-height: 100px;
+	}
+
+	select {
+		cursor: pointer;
+		appearance: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230A7AFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 1rem center;
+		background-size: 20px;
+		padding-right: 3rem;
+	}
+
+	.checkbox-group {
+		background: var(--gray-100);
+		border-radius: 16px;
+		padding: 1.5rem;
+		border: 2px solid var(--gray-300);
+	}
+
+	.checkbox-group legend {
+		font-weight: 700;
+		color: var(--primary);
+		font-size: 1.125rem;
+		margin-bottom: 1rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.checkbox-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem;
+		border-radius: 10px;
+		transition: all 0.2s;
+		cursor: pointer;
+		margin-bottom: 0.5rem;
+	}
+
+	.checkbox-item:hover {
+		background: var(--white);
+	}
+
+	.checkbox-item input[type="checkbox"] {
+		width: 20px;
+		height: 20px;
+		cursor: pointer;
+		accent-color: var(--primary);
+	}
+
+	.checkbox-item label {
+		cursor: pointer;
+		font-weight: 500;
+		margin: 0;
+	}
+
+	.emergency-contact {
+		background: linear-gradient(135deg, #FFF4E6 0%, #FFE8CC 100%);
+		border: 2px solid var(--warning);
+		padding: 1.5rem;
+		border-radius: 16px;
+	}
+
+	.emergency-contact legend {
+		color: var(--warning);
+		font-weight: 700;
+		font-size: 1.125rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.emergency-contact legend::before {
+		content: '🚨';
+		font-size: 1.25rem;
+	}
+
+	.form-actions {
+		display: flex;
+		gap: 1rem;
+		justify-content: center;
+		margin-top: 2rem;
+		padding-top: 2rem;
+		border-top: 2px solid var(--gray-100);
+	}
+
+	.form-actions button {
+		padding: 1rem 3rem;
+		font-size: 1.125rem;
+		font-weight: 700;
+		min-width: 200px;
+	}
+
+	@media (max-width: 768px) {
+		.registration-form {
+			padding: 1.5rem;
+		}
+
+		.form-sections {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+
+		.form-actions {
+			flex-direction: column;
+		}
+
+		.form-actions button {
+			width: 100%;
+		}
+	}
+</style>
+
+<div class="register-container">
+	<div class="page-header">
+		<h2>Patient Registration</h2>
+		<p class="page-subtitle">Complete patient information for comprehensive care</p>
+	</div>
+
+	<div class="auth-status">
+		{% if request.cookies.get('username') %}
+			Logged in as <strong>{{ request.cookies.get('username') }}</strong> |
+			<a href="/logout">Logout</a>
+		{% else %}
+			You are not logged in. <a href="/login">Login</a> or <a href="/auth/register">Create an account</a>
+		{% endif %}
+	</div>
+
+	<form method="post" action="/patients" class="registration-form">
+		<div class="form-sections">
+			<!-- Personal Information -->
+			<div class="form-section">
+				<div class="section-header">
+					<span class="section-icon">👤</span>
+					<h3 class="section-title">Personal Information</h3>
+				</div>
+				
+				<div class="form-field">
+					<label>Full Name</label>
+					<input name="name" required placeholder="Enter patient's full name">
+				</div>
+				
+				<div class="form-field">
+					<label>Age</label>
+					<input type="number" name="age" placeholder="Patient's age">
+				</div>
+				
+				<div class="form-field">
+					<label>Gender</label>
+					<select name="gender">
+						<option value="">-- Select Gender --</option>
+						<option>Male</option>
+						<option>Female</option>
+						<option>Other</option>
+					</select>
+				</div>
+				
+				<div class="form-field">
+					<label>Email Address</label>
+					<input name="email" type="email" placeholder="patient@example.com">
+				</div>
+				
+				<div class="form-field">
+					<label>Contact Number</label>
+					<input name="contact" placeholder="+91 XXXXX XXXXX">
+				</div>
+			</div>
+
+			<!-- Medical History -->
+			<div class="form-section">
+				<div class="section-header">
+					<span class="section-icon">📋</span>
+					<h3 class="section-title">Medical History</h3>
+				</div>
+				
+				<div class="form-field">
+					<label>Known Allergies</label>
+					<textarea name="allergies" placeholder="List any known allergies (medications, foods, environmental)..."></textarea>
+				</div>
+				
+				<div class="form-field">
+					<label>Past Medical Conditions</label>
+					<textarea name="medical_history" placeholder="Previous conditions, surgeries, or chronic illnesses..."></textarea>
+				</div>
+				
+				<div class="form-field">
+					<label>Current Medications</label>
+					<textarea name="current_treatments" placeholder="List ongoing medications or treatments..."></textarea>
+				</div>
+				
+				<div class="form-field">
+					<label>Family Medical History</label>
+					<textarea name="family_history" placeholder="Relevant family medical history..."></textarea>
+				</div>
+			</div>
+
+			<!-- Symptoms & Emergency -->
+			<div class="form-section">
+				<div class="section-header">
+					<span class="section-icon">🩺</span>
+					<h3 class="section-title">Current Symptoms</h3>
+				</div>
+				
+				<fieldset class="checkbox-group">
+					<legend>Select all that apply</legend>
+					<div class="checkbox-item">
+						<input type="checkbox" name="symptoms" value="Redness" id="redness">
+						<label for="redness">Redness</label>
+					</div>
+					<div class="checkbox-item">
+						<input type="checkbox" name="symptoms" value="Itching" id="itching">
+						<label for="itching">Itching</label>
+					</div>
+					<div class="checkbox-item">
+						<input type="checkbox" name="symptoms" value="Blisters" id="blisters">
+						<label for="blisters">Blisters</label>
+					</div>
+					<div class="checkbox-item">
+						<input type="checkbox" name="symptoms" value="Dry skin" id="dry">
+						<label for="dry">Dry Skin</label>
+					</div>
+					<div class="checkbox-item">
+						<input type="checkbox" name="symptoms" value="Patches" id="patches">
+						<label for="patches">Patches</label>
+					</div>
+					<div class="checkbox-item">
+						<input type="checkbox" name="symptoms" value="Peeling" id="peeling">
+						<label for="peeling">Peeling</label>
+					</div>
+				</fieldset>
+
+				<fieldset class="emergency-contact">
+					<legend>Emergency Contact</legend>
+					<div class="form-field">
+						<label>Contact Name</label>
+						<input name="emergency_name" placeholder="Emergency contact person" />
+					</div>
+					<div class="form-field">
+						<label>Phone Number</label>
+						<input name="emergency_contact" placeholder="+91 XXXXX XXXXX" />
+					</div>
+					<div class="form-field">
+						<label>Relationship</label>
+						<input name="emergency_relation" placeholder="e.g., Spouse, Parent, Sibling" />
+					</div>
+				</fieldset>
+			</div>
+		</div>
+
+		<div class="form-actions">
+			<button type="submit" class="btn primary">✓ Register Patient</button>
+		</div>
+	</form>
+</div>
+{% endblock %}

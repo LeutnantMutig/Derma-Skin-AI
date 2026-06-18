@@ -1,0 +1,290 @@
+
+<!-- treatment_dashboard.html -->
+{% extends "base.html" %}
+{% block content %}
+<style>
+	.dashboard-header {
+		text-align: center;
+		background: var(--white);
+		padding: 3rem 2rem;
+		border-radius: 24px;
+		box-shadow: var(--shadow-lg);
+		margin-bottom: 3rem;
+		border: 1px solid rgba(10, 122, 255, 0.08);
+	}
+
+	.dashboard-header h2 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 2.75rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 2rem;
+		margin-bottom: 3rem;
+	}
+
+	.stat-card {
+		background: var(--white);
+		padding: 2.5rem;
+		border-radius: 20px;
+		box-shadow: var(--shadow-md);
+		text-align: center;
+		border: 1px solid rgba(10, 122, 255, 0.08);
+		transition: all 0.3s;
+	}
+
+	.stat-card:hover {
+		transform: translateY(-8px);
+		box-shadow: var(--shadow-xl);
+	}
+
+	.stat-card.total {
+		background: linear-gradient(135deg, var(--primary-light) 0%, rgba(10, 122, 255, 0.1) 100%);
+		border-color: var(--primary);
+	}
+
+	.stat-card.ongoing {
+		background: linear-gradient(135deg, #E8F5FF 0%, #D0EBFF 100%);
+		border-color: #3B82F6;
+	}
+
+	.stat-card.cured {
+		background: linear-gradient(135deg, #E6FAF5 0%, #D1F5EA 100%);
+		border-color: var(--success);
+	}
+
+	.stat-icon {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+	}
+
+	.stat-label {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--gray-700);
+		margin-bottom: 0.5rem;
+	}
+
+	.stat-value {
+		font-size: 3rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.chart-section {
+		background: var(--white);
+		padding: 2.5rem;
+		border-radius: 20px;
+		box-shadow: var(--shadow-md);
+		margin-bottom: 3rem;
+		border: 1px solid rgba(10, 122, 255, 0.08);
+	}
+
+	.data-table {
+		background: var(--white);
+		border-radius: 20px;
+		padding: 2.5rem;
+		box-shadow: var(--shadow-md);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+		margin-top: 3rem;
+	}
+
+	.table-header {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: var(--gray-900);
+		margin-bottom: 2rem;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	thead {
+		background: var(--gray-100);
+	}
+
+	th {
+		padding: 1rem;
+		text-align: left;
+		font-weight: 700;
+		color: var(--gray-900);
+		border-bottom: 2px solid var(--gray-300);
+	}
+
+	td {
+		padding: 1rem;
+		border-bottom: 1px solid var(--gray-200);
+	}
+
+	tbody tr {
+		transition: all 0.2s;
+	}
+
+	tbody tr:hover {
+		background: var(--gray-100);
+	}
+
+	.status-badge {
+		display: inline-block;
+		padding: 0.375rem 1rem;
+		border-radius: 50px;
+		font-weight: 600;
+		font-size: 0.875rem;
+	}
+
+	.status-badge.cured {
+		background: linear-gradient(135deg, #E6FAF5 0%, #D1F5EA 100%);
+		color: var(--success);
+		border: 2px solid var(--success);
+	}
+
+	.status-badge.ongoing {
+		background: linear-gradient(135deg, var(--primary-light) 0%, rgba(10, 122, 255, 0.1) 100%);
+		color: var(--primary);
+		border: 2px solid var(--primary);
+	}
+
+	.table-link {
+		color: var(--primary);
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.table-link:hover {
+		text-decoration: underline;
+	}
+</style>
+
+<div class="dashboard-header">
+	<h2>📊 Treatment Dashboard</h2>
+</div>
+
+<div class="stats-grid">
+	<div class="stat-card total">
+		<div class="stat-icon">📋</div>
+		<div class="stat-label">Total Treatments</div>
+		<div class="stat-value">{{ treatments | length }}</div>
+	</div>
+	<div class="stat-card ongoing">
+		<div class="stat-icon">🔄</div>
+		<div class="stat-label">Ongoing</div>
+		<div class="stat-value">{{ ongoing | length }}</div>
+	</div>
+	<div class="stat-card cured">
+		<div class="stat-icon">✓</div>
+		<div class="stat-label">Cured</div>
+		<div class="stat-value">{{ cured | length }}</div>
+	</div>
+</div>
+
+<div class="chart-section">
+	<canvas id="treatmentChart" height="80"></canvas>
+</div>
+
+{% if upcoming %}
+<div class="data-table">
+	<h3 class="table-header">📅 Upcoming Checkups</h3>
+	<table>
+		<thead>
+			<tr>
+				<th>Patient</th>
+				<th>Disease</th>
+				<th>Next Checkup</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for t in upcoming %}
+			<tr>
+				<td>{{ t.patient.name }}</td>
+				<td>{{ t.disease_name }}</td>
+				<td style="color: var(--primary); font-weight: 600;">{{ t.next_checkup_date.strftime('%d %b %Y') }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endif %}
+
+<div class="data-table">
+	<h3 class="table-header">📋 All Treatments</h3>
+	<table>
+		<thead>
+			<tr>
+				<th>Patient</th>
+				<th>Disease</th>
+				<th>Progress</th>
+				<th>Status</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for t in treatments %}
+			<tr>
+				<td>{{ t.patient.name }}</td>
+				<td>{{ t.disease_name }}</td>
+				<td>{{ t.progress_percent }}%</td>
+				<td>
+					{% if t.cured %}
+					<span class="status-badge cured">✓ Cured</span>
+					{% else %}
+					<span class="status-badge ongoing">🔄 Ongoing</span>
+					{% endif %}
+				</td>
+				<td>
+					<a href="/treatment/report/{{ t.id }}" class="table-link">View Report →</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('treatmentChart');
+new Chart(ctx, {
+	type: 'doughnut',
+	data: {
+		labels: ['Cured', 'Ongoing'],
+		datasets: [{
+			data: [{{ cured | length }}, {{ ongoing | length }}],
+			backgroundColor: ['#00C48C', '#0A7AFF'],
+			borderWidth: 0
+		}]
+	},
+	options: {
+		responsive: true,
+		plugins: {
+			legend: { 
+				position: 'bottom',
+				labels: {
+					font: { size: 14, weight: 600 },
+					padding: 20
+				}
+			},
+			title: { 
+				display: true, 
+				text: 'Treatment Progress Overview',
+				font: { size: 20, weight: 700 }
+			}
+		}
+	}
+});
+</script>
+{% endblock %}

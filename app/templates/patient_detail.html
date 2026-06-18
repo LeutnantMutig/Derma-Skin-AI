@@ -1,0 +1,374 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+	.patient-container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	.patient-profile {
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		border-radius: 24px;
+		padding: 3rem;
+		box-shadow: var(--shadow-xl);
+		margin-bottom: 3rem;
+		color: var(--white);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.patient-profile::before {
+		content: '';
+		position: absolute;
+		top: -50%;
+		right: -10%;
+		width: 400px;
+		height: 400px;
+		background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+		border-radius: 50%;
+	}
+
+	.patient-profile-content {
+		position: relative;
+		z-index: 1;
+	}
+
+	.patient-header h2 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 2.75rem;
+		font-weight: 800;
+		color: var(--white);
+		margin-bottom: 2rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.patient-header h2::before {
+		content: '👤';
+		font-size: 3rem;
+		background: var(--white);
+		padding: 0.5rem;
+		border-radius: 50%;
+	}
+
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 1.5rem;
+	}
+
+	.info-card {
+		background: rgba(255, 255, 255, 0.15);
+		backdrop-filter: blur(10px);
+		padding: 1.5rem;
+		border-radius: 16px;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.info-label {
+		font-size: 0.875rem;
+		font-weight: 600;
+		opacity: 0.9;
+		margin-bottom: 0.5rem;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+
+	.info-value {
+		font-size: 1.5rem;
+		font-weight: 700;
+	}
+
+	.medical-sections {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+		gap: 2rem;
+		margin-bottom: 3rem;
+	}
+
+	.medical-card {
+		background: var(--white);
+		border-radius: 20px;
+		padding: 2.5rem;
+		box-shadow: var(--shadow-md);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+		transition: all 0.3s;
+	}
+
+	.medical-card:hover {
+		box-shadow: var(--shadow-xl);
+		transform: translateY(-4px);
+	}
+
+	.medical-header {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 2px solid var(--gray-100);
+	}
+
+	.medical-icon {
+		font-size: 2rem;
+	}
+
+	.medical-title {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--gray-900);
+	}
+
+	.medical-content {
+		padding: 1.5rem;
+		background: var(--gray-100);
+		border-radius: 12px;
+		border: 2px solid var(--gray-300);
+		color: var(--gray-900);
+		line-height: 1.8;
+		font-size: 1rem;
+	}
+
+	.checkups-section {
+		background: var(--white);
+		border-radius: 20px;
+		padding: 2.5rem;
+		box-shadow: var(--shadow-md);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+	}
+
+	.section-header {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-bottom: 2rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 2px solid var(--gray-100);
+	}
+
+	.section-icon {
+		font-size: 2rem;
+	}
+
+	.section-title {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: var(--gray-900);
+	}
+
+	.checkups-list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.checkup-item {
+		padding: 2rem;
+		background: var(--gray-100);
+		border-radius: 16px;
+		border: 2px solid var(--gray-300);
+		transition: all 0.3s;
+	}
+
+	.checkup-item:hover {
+		transform: translateX(8px);
+		border-color: var(--primary);
+		box-shadow: var(--shadow-md);
+		background: var(--white);
+	}
+
+	.checkup-header-section {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.checkup-id {
+		font-weight: 700;
+		color: var(--primary);
+		font-size: 1.125rem;
+	}
+
+	.checkup-condition {
+		font-weight: 600;
+		color: var(--gray-900);
+		font-size: 1rem;
+	}
+
+	.confidence-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.25rem;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		color: var(--white);
+		border-radius: 50px;
+		font-weight: 700;
+		font-size: 0.875rem;
+	}
+
+	.confidence-badge::before {
+		content: '📊';
+	}
+
+	.btn-treatment {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: linear-gradient(135deg, var(--secondary) 0%, #00A89D 100%);
+		color: var(--white);
+		border-radius: 12px;
+		font-weight: 600;
+		text-decoration: none;
+		transition: all 0.3s;
+		box-shadow: var(--shadow-sm);
+		margin-top: 1rem;
+	}
+
+	.btn-treatment:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		background: var(--gray-100);
+		border-radius: 16px;
+		border: 3px dashed var(--gray-300);
+	}
+
+	.empty-icon {
+		font-size: 4rem;
+		margin-bottom: 1rem;
+	}
+
+	.empty-state p {
+		color: var(--gray-700);
+		font-size: 1.25rem;
+		font-weight: 500;
+	}
+
+	@media (max-width: 768px) {
+		.patient-profile {
+			padding: 2rem;
+		}
+
+		.patient-header h2 {
+			font-size: 2rem;
+		}
+
+		.medical-sections {
+			grid-template-columns: 1fr;
+		}
+
+		.checkup-item {
+			padding: 1.5rem;
+		}
+	}
+</style>
+
+<div class="patient-container">
+	<div class="patient-profile">
+		<div class="patient-profile-content">
+			<div class="patient-header">
+				<h2>{{ patient.name }}</h2>
+			</div>
+
+			<div class="info-grid">
+				<div class="info-card">
+					<div class="info-label">Age</div>
+					<div class="info-value">{{ patient.age }} years</div>
+				</div>
+				
+				<div class="info-card">
+					<div class="info-label">Gender</div>
+					<div class="info-value">{{ patient.gender }}</div>
+				</div>
+				
+				<div class="info-card">
+					<div class="info-label">Contact</div>
+					<div class="info-value">{{ patient.contact }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="medical-sections">
+		<div class="medical-card">
+			<div class="medical-header">
+				<span class="medical-icon">🩺</span>
+				<h3 class="medical-title">Current Symptoms</h3>
+			</div>
+			<div class="medical-content">
+				{{ patient.symptoms }}
+			</div>
+		</div>
+
+		<div class="medical-card">
+			<div class="medical-header">
+				<span class="medical-icon">📋</span>
+				<h3 class="medical-title">Medical History</h3>
+			</div>
+			<div class="medical-content">
+				{{ patient.medical_history }}
+			</div>
+		</div>
+	</div>
+
+	<div class="checkups-section">
+		<div class="section-header">
+			<span class="section-icon">🔬</span>
+			<h3 class="section-title">Checkup Records</h3>
+		</div>
+
+		{% if patient.checkups %}
+			<ul class="checkups-list">
+				{% for c in patient.checkups %}
+					<li class="checkup-item">
+						<div class="checkup-header-section">
+							<div>
+								<span class="checkup-id">Checkup #{{ c.id }}</span>
+								<span class="checkup-condition">
+									— Condition: 
+									{% if c.predicted_condition %}
+										{{ c.predicted_condition }}
+									{% else %}
+										Pending Analysis
+									{% endif %}
+								</span>
+							</div>
+							
+							<div class="confidence-badge">
+								Confidence: 
+								{% if c.confidence %}
+									{{ (c.confidence) | round(2) }}%
+								{% else %}
+									0%
+								{% endif %}
+							</div>
+						</div>
+
+						<a href="/treatment/new/{{ c.id }}" class="btn-treatment">
+							Start Treatment Plan →
+						</a>
+					</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<div class="empty-state">
+				<div class="empty-icon">📭</div>
+				<p>No checkup records found</p>
+			</div>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

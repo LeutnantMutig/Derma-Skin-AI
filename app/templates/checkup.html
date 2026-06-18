@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+	.checkup-container {
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+	.page-header {
+		text-align: center;
+		background: var(--white);
+		padding: 3rem 2rem;
+		border-radius: 24px;
+		box-shadow: var(--shadow-lg);
+		margin-bottom: 3rem;
+		border: 1px solid rgba(10, 122, 255, 0.08);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.page-header::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 4px;
+		background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+	}
+
+	.page-header h2 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 2.5rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 0.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.page-header h2::before {
+		content: '🏥';
+		font-size: 2.5rem;
+		-webkit-text-fill-color: initial;
+	}
+
+	.patient-info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		color: var(--gray-700);
+		font-size: 1.25rem;
+		font-weight: 600;
+	}
+
+	.patient-info::before {
+		content: '👤';
+		font-size: 1.5rem;
+	}
+
+	.checkup-form {
+		background: var(--white);
+		border-radius: 24px;
+		padding: 3rem;
+		box-shadow: var(--shadow-lg);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 2rem;
+		margin-bottom: 2rem;
+	}
+
+	.form-field {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.form-field.full-width {
+		grid-column: 1 / -1;
+	}
+
+	.form-field label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+		font-weight: 600;
+		color: var(--gray-900);
+		font-size: 0.95rem;
+	}
+
+	.form-field label::before {
+		content: '';
+		width: 4px;
+		height: 4px;
+		background: var(--primary);
+		border-radius: 50%;
+	}
+
+	input, textarea {
+		width: 100%;
+		padding: 0.875rem 1.25rem;
+		border: 2px solid var(--gray-300);
+		border-radius: 12px;
+		font-size: 1rem;
+		font-family: inherit;
+		transition: all 0.3s;
+		background: var(--white);
+	}
+
+	input:disabled {
+		background: var(--gray-100);
+		color: var(--gray-700);
+		cursor: not-allowed;
+		border-color: var(--gray-300);
+	}
+
+	input:focus, textarea:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 4px rgba(10, 122, 255, 0.1);
+	}
+
+	textarea {
+		resize: vertical;
+		min-height: 120px;
+	}
+
+	.file-upload-wrapper {
+		position: relative;
+		padding: 3rem;
+		border: 3px dashed var(--gray-300);
+		border-radius: 20px;
+		background: linear-gradient(135deg, var(--gray-100) 0%, var(--primary-light) 100%);
+		text-align: center;
+		transition: all 0.3s;
+		cursor: pointer;
+	}
+
+	.file-upload-wrapper:hover {
+		border-color: var(--primary);
+		background: linear-gradient(135deg, var(--primary-light) 0%, rgba(0, 217, 184, 0.1) 100%);
+		transform: scale(1.02);
+	}
+
+	.file-upload-wrapper input[type="file"] {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		opacity: 0;
+		cursor: pointer;
+		padding: 0;
+		border: none;
+	}
+
+	.upload-content {
+		pointer-events: none;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.upload-icon {
+		font-size: 4rem;
+		animation: bounce 2s infinite;
+	}
+
+	@keyframes bounce {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-10px); }
+	}
+
+	.upload-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--primary);
+		font-family: 'Poppins', sans-serif;
+	}
+
+	.upload-hint {
+		color: var(--gray-700);
+		font-size: 1rem;
+		font-weight: 500;
+	}
+
+	.submit-section {
+		margin-top: 2rem;
+		padding-top: 2rem;
+		border-top: 2px solid var(--gray-100);
+		display: flex;
+		justify-content: center;
+	}
+
+	.submit-section button {
+		padding: 1.25rem 3rem;
+		font-size: 1.25rem;
+		font-weight: 700;
+		min-width: 320px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.submit-section button::before {
+		content: '🔬';
+		font-size: 1.5rem;
+	}
+
+	@media (max-width: 768px) {
+		.checkup-form {
+			padding: 2rem;
+		}
+
+		.form-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.page-header {
+			padding: 2rem 1rem;
+		}
+
+		.page-header h2 {
+			font-size: 2rem;
+			flex-direction: column;
+		}
+
+		.submit-section button {
+			width: 100%;
+			min-width: auto;
+		}
+	}
+</style>
+
+<div class="checkup-container">
+	<div class="page-header">
+		<h2>New Checkup</h2>
+		<p class="patient-info">{{ patient.name }}</p>
+	</div>
+
+	<!-- Error Messages -->
+	{% if request.query_params.get('error') %}
+	<div class="alert alert-error">
+		{% if request.query_params.get('error') == 'patient_not_found' %}
+			❌ Patient not found!
+		{% elif request.query_params.get('error') == 'invalid_image_format' %}
+			❌ Invalid image format. Please upload JPG, PNG, GIF, BMP, or WebP files.
+		{% elif request.query_params.get('error') == 'image_too_large' %}
+			❌ Image too large. Please upload images smaller than 10MB.
+		{% elif request.query_params.get('error') == 'server_error' %}
+			❌ Server error occurred. Please try again.
+		{% else %}
+			❌ {{ request.query_params.get('error') }}
+		{% endif %}
+	</div>
+	{% endif %}
+
+	<form method="post" enctype="multipart/form-data" class="checkup-form">
+		<div class="form-grid">
+			<div class="form-field">
+				<label>Patient ID</label>
+				<input value="{{ patient.id }}" disabled />
+			</div>
+
+			<div class="form-field">
+				<label>Patient Name</label>
+				<input name="name" value="{{ patient.name }}" required />
+			</div>
+
+			<div class="form-field">
+				<label>Age</label>
+				<input name="age" type="number" value="{{ patient.age or '' }}" placeholder="Enter age" />
+			</div>
+
+			<div class="form-field">
+				<label>Gender</label>
+				<input name="gender" value="{{ patient.gender or '' }}" placeholder="Gender" />
+			</div>
+
+			<div class="form-field full-width">
+				<label>Contact Number</label>
+				<input name="contact" value="{{ patient.contact or '' }}" placeholder="+91 XXXXX XXXXX" />
+			</div>
+
+			<div class="form-field full-width">
+				<label>Known Allergies</label>
+				<textarea name="allergies" rows="2" placeholder="List any known allergies...">{{ patient.allergies or '' }}</textarea>
+			</div>
+
+			<div class="form-field full-width">
+				<label>Current Symptoms</label>
+				<textarea name="symptoms" rows="3" placeholder="Describe all symptoms in detail..."></textarea>
+			</div>
+
+			<div class="form-field full-width">
+				<label>Additional Notes</label>
+				<textarea name="notes" rows="2" placeholder="Any additional information..."></textarea>
+			</div>
+
+			<div class="form-field full-width">
+				<label>Before Treatment Image</label>
+				<div class="file-upload-wrapper">
+					<input type="file" name="image" accept="image/*" />
+					<div class="upload-content">
+						<span class="upload-icon">📸</span>
+						<div class="upload-title">Click to Upload Image</div>
+						<div class="upload-hint">Supported: JPG, PNG, GIF, BMP, WebP (Max 10MB)</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="submit-section">
+			<button class="btn primary" type="submit">Analyze & Create Record</button>
+		</div>
+	</form>
+</div>
+
+<script>
+	// File upload preview
+	const fileInput = document.querySelector('input[type="file"]');
+	const uploadWrapper = document.querySelector('.file-upload-wrapper');
+	
+	fileInput.addEventListener('change', function(e) {
+		if (this.files && this.files[0]) {
+			const fileName = this.files[0].name;
+			const uploadTitle = uploadWrapper.querySelector('.upload-title');
+			uploadTitle.textContent = '✓ ' + fileName;
+			uploadWrapper.style.borderColor = 'var(--success)';
+			uploadWrapper.style.background = 'linear-gradient(135deg, #E6FAF5 0%, #D1F5EA 100%)';
+		}
+	});
+</script>
+{% endblock %}

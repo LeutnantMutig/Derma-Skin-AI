@@ -1,0 +1,452 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+	.history-container {
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.page-header {
+		text-align: center;
+		background: var(--white);
+		padding: 3rem 2rem;
+		border-radius: 24px;
+		box-shadow: var(--shadow-lg);
+		margin-bottom: 3rem;
+		border: 1px solid rgba(10, 122, 255, 0.08);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.page-header::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 4px;
+		background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+	}
+
+	.page-header h2 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 2.75rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	.page-header h2::before {
+		content: '📋';
+		font-size: 3rem;
+		-webkit-text-fill-color: initial;
+	}
+
+	.page-subtitle {
+		color: var(--gray-700);
+		font-size: 1.125rem;
+		font-weight: 500;
+	}
+
+	.records-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+		gap: 2rem;
+		margin-bottom: 3rem;
+	}
+
+	.record-card {
+		background: var(--white);
+		border-radius: 20px;
+		padding: 2.5rem;
+		box-shadow: var(--shadow-md);
+		border: 2px solid rgba(10, 122, 255, 0.08);
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.record-card::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 6px;
+		height: 100%;
+		background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+		transform: scaleY(0);
+		transition: transform 0.4s;
+	}
+
+	.record-card:hover {
+		transform: translateY(-8px) scale(1.02);
+		box-shadow: var(--shadow-xl);
+		border-color: var(--primary);
+	}
+
+	.record-card:hover::before {
+		transform: scaleY(1);
+	}
+
+	.record-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 2px solid var(--gray-100);
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.record-id {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: var(--primary);
+	}
+
+	.record-id::before {
+		content: '🏥';
+		font-size: 1.5rem;
+	}
+
+	.record-disease {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--gray-900);
+		margin-bottom: 1rem;
+	}
+
+	.record-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: var(--gray-700);
+		font-size: 0.95rem;
+		margin-bottom: 0.75rem;
+		font-weight: 500;
+	}
+
+	.record-meta strong {
+		color: var(--gray-900);
+		font-weight: 700;
+	}
+
+	.record-meta::before {
+		content: '📅';
+		font-size: 1rem;
+	}
+
+	.status-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.25rem;
+		border-radius: 50px;
+		font-weight: 700;
+		font-size: 0.875rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.status-badge.active {
+		background: linear-gradient(135deg, var(--primary-light) 0%, rgba(10, 122, 255, 0.15) 100%);
+		color: var(--primary);
+		border: 2px solid var(--primary);
+	}
+
+	.status-badge.active::before {
+		content: '🔄';
+	}
+
+	.status-badge.completed {
+		background: linear-gradient(135deg, #E6FAF5 0%, #D1F5EA 100%);
+		color: var(--success);
+		border: 2px solid var(--success);
+	}
+
+	.status-badge.completed::before {
+		content: '✓';
+	}
+
+	.confidence-section {
+		margin: 1.5rem 0;
+		padding: 1.5rem;
+		background: var(--gray-100);
+		border-radius: 16px;
+		border: 2px solid var(--gray-300);
+	}
+
+	.confidence-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.75rem;
+	}
+
+	.confidence-label {
+		font-size: 0.875rem;
+		font-weight: 700;
+		color: var(--gray-900);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.confidence-value {
+		font-size: 1.25rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.confidence-bar-container {
+		height: 12px;
+		background: var(--gray-300);
+		border-radius: 50px;
+		overflow: hidden;
+		box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+	}
+
+	.confidence-bar-fill {
+		height: 100%;
+		background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+		border-radius: 50px;
+		transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.confidence-bar-fill::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+		animation: shimmer 2s infinite;
+	}
+
+	@keyframes shimmer {
+		0% { transform: translateX(-100%); }
+		100% { transform: translateX(100%); }
+	}
+
+	.images-section {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+		gap: 1rem;
+		margin-top: 1.5rem;
+	}
+
+	.image-box {
+		position: relative;
+		overflow: hidden;
+		border-radius: 12px;
+		border: 2px solid var(--gray-300);
+		transition: all 0.3s;
+		cursor: pointer;
+	}
+
+	.image-box:hover {
+		transform: scale(1.05);
+		box-shadow: var(--shadow-md);
+		border-color: var(--primary);
+	}
+
+	.image-label {
+		position: absolute;
+		top: 0.5rem;
+		left: 0.5rem;
+		padding: 0.375rem 0.75rem;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(10px);
+		border-radius: 8px;
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: var(--gray-900);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		z-index: 1;
+	}
+
+	.image-box img {
+		width: 100%;
+		height: 160px;
+		object-fit: cover;
+		display: block;
+	}
+
+	.empty-state {
+		grid-column: 1 / -1;
+		text-align: center;
+		padding: 5rem 2rem;
+		background: var(--white);
+		border-radius: 24px;
+		box-shadow: var(--shadow-md);
+		border: 3px dashed var(--gray-300);
+	}
+
+	.empty-icon {
+		font-size: 5rem;
+		margin-bottom: 1.5rem;
+		animation: float 3s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-20px); }
+	}
+
+	.empty-state h3 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.75rem;
+		color: var(--gray-900);
+		margin-bottom: 0.75rem;
+		font-weight: 700;
+	}
+
+	.empty-state p {
+		color: var(--gray-700);
+		margin-bottom: 2rem;
+		font-size: 1.125rem;
+	}
+
+	.action-section {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 3rem;
+		padding-top: 2rem;
+		border-top: 2px solid var(--gray-100);
+	}
+
+	.action-section .btn {
+		padding: 1rem 2.5rem;
+		font-size: 1.125rem;
+		font-weight: 700;
+	}
+
+	@media (max-width: 768px) {
+		.records-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.page-header h2 {
+			font-size: 2rem;
+		}
+
+		.record-card {
+			padding: 2rem;
+		}
+
+		.action-section {
+			flex-direction: column;
+		}
+
+		.action-section .btn {
+			width: 100%;
+		}
+	}
+</style>
+
+<div class="history-container">
+	<div class="page-header">
+		<h2>Medical History</h2>
+		<p class="page-subtitle">Complete patient treatment records and progress</p>
+	</div>
+
+	<div class="records-grid">
+		{% for r in records %}
+		<div class="record-card">
+			<div class="record-header">
+				<div class="record-id">
+					Record #{{ r.id }}
+				</div>
+				<div class="status-badge {% if r.cure_status == 'active' %}active{% else %}completed{% endif %}">
+					{{ r.cure_status }}
+				</div>
+			</div>
+			
+			<div class="record-disease">
+				{{ r.predicted_disease or 'Diagnosis Pending' }}
+			</div>
+			
+			<div class="record-meta">
+				<strong>Started:</strong> {{ r.start_date.strftime('%d %b %Y') }}
+			</div>
+
+			<div class="confidence-section">
+				<div class="confidence-header">
+					<span class="confidence-label">Confidence</span>
+					<span class="confidence-value">{{ '%.0f' % (r.confidence_score*100) }}%</span>
+				</div>
+				<div class="confidence-bar-container">
+					<div class="confidence-bar-fill" style="width: {{ '%.0f' % (r.confidence_score*100) }}%"></div>
+				</div>
+			</div>
+
+			{% if r.before_image_path or r.after_image_path %}
+			<div class="images-section">
+				{% if r.before_image_path %}
+				<div class="image-box">
+					<span class="image-label">Before</span>
+					<img src="{{ r.before_image_path }}" alt="Before Treatment" />
+				</div>
+				{% endif %}
+				
+				{% if r.after_image_path %}
+				<div class="image-box">
+					<span class="image-label">After</span>
+					<img src="{{ r.after_image_path }}" alt="After Treatment" />
+				</div>
+				{% endif %}
+			</div>
+			{% endif %}
+		</div>
+		{% else %}
+		<div class="empty-state">
+			<div class="empty-icon">📋</div>
+			<h3>No Medical Records Yet</h3>
+			<p>Start your first checkup to begin tracking treatment progress</p>
+			<a class="btn primary" href="/checkups/new/{{ patient.id }}">🔬 Start First Checkup</a>
+		</div>
+		{% endfor %}
+	</div>
+
+	{% if records %}
+	<div class="action-section">
+		<a class="btn primary" href="/checkups/new/{{ patient.id }}">➕ New Checkup</a>
+		<a class="btn outline" href="/patients/{{ patient.id }}">👤 View Patient Profile</a>
+	</div>
+	{% endif %}
+</div>
+
+<script>
+	// Animate confidence bars on load
+	document.addEventListener('DOMContentLoaded', function() {
+		const bars = document.querySelectorAll('.confidence-bar-fill');
+		bars.forEach(bar => {
+			const width = bar.style.width;
+			bar.style.width = '0%';
+			setTimeout(() => {
+				bar.style.width = width;
+			}, 100);
+		});
+	});
+</script>
+{% endblock %}

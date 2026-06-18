@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+	.report-container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+	.report-card {
+		background: var(--white);
+		border-radius: 24px;
+		padding: 3rem;
+		box-shadow: var(--shadow-lg);
+		border: 1px solid rgba(10, 122, 255, 0.08);
+		margin-bottom: 2rem;
+	}
+	.report-header {
+		text-align: center;
+		padding-bottom: 2rem;
+		border-bottom: 2px solid var(--gray-100);
+		margin-bottom: 2rem;
+	}
+	.report-header h2 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 2.5rem;
+		font-weight: 800;
+		background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-bottom: 1rem;
+	}
+	.info-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 2rem;
+		margin-bottom: 3rem;
+	}
+	.info-item {
+		padding: 1.5rem;
+		background: var(--gray-100);
+		border-radius: 16px;
+		border: 2px solid var(--gray-300);
+	}
+	.info-label {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--gray-700);
+		margin-bottom: 0.5rem;
+		text-transform: uppercase;
+	}
+	.info-value {
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: var(--gray-900);
+	}
+	.progress-section {
+		background: var(--white);
+		padding: 2.5rem;
+		border-radius: 20px;
+		border: 2px solid var(--gray-300);
+		margin-bottom: 3rem;
+	}
+	.progress-header {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--gray-900);
+		margin-bottom: 1.5rem;
+	}
+	.progress-bar-container {
+		height: 24px;
+		background: var(--gray-200);
+		border-radius: 50px;
+		overflow: hidden;
+		margin-bottom: 1rem;
+		box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+	}
+	.progress-bar-fill {
+		height: 100%;
+		background: linear-gradient(90deg, var(--success) 0%, #00A875 100%);
+		border-radius: 50px;
+		transition: width 1s;
+	}
+	.progress-text {
+		font-size: 1.125rem;
+		color: var(--gray-700);
+		font-weight: 500;
+	}
+	.image-card {
+		background: var(--gray-100);
+		padding: 2rem;
+		border-radius: 20px;
+		border: 2px solid var(--gray-300);
+		text-align: center;
+	}
+	.image-card h4 {
+		font-family: 'Poppins', sans-serif;
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--gray-900);
+		margin-bottom: 1.5rem;
+	}
+	.image-card img {
+		width: 100%;
+		max-height: 400px;
+		object-fit: cover;
+		border-radius: 16px;
+		box-shadow: var(--shadow-md);
+	}
+	.action-buttons {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+</style>
+
+<div class="report-container">
+	<div class="report-card">
+		<div class="report-header">
+			<h2>📋 Treatment Report Card</h2>
+			<p style="color: var(--gray-700); font-size: 1.125rem;">{{ plan.disease_name }}</p>
+		</div>
+
+		<div class="info-grid">
+			<div class="info-item"><div class="info-label">Remedy</div><div class="info-value">{{ plan.remedy_name }}</div></div>
+			<div class="info-item"><div class="info-label">Medicines</div><div class="info-value">{{ plan.medicines }}</div></div>
+			<div class="info-item"><div class="info-label">Dosage</div><div class="info-value">{{ plan.dosage }}</div></div>
+			<div class="info-item">
+				<div class="info-label">Next Checkup</div>
+				<div class="info-value">
+					{% if plan.next_checkup_date %}
+						{{ plan.next_checkup_date.strftime('%d %b %Y') }}
+					{% else %} Not Scheduled {% endif %}
+				</div>
+			</div>
+		</div>
+
+		{% if plan.notes %}
+		<div class="info-item" style="margin-bottom: 3rem;">
+			<div class="info-label">Doctor Notes</div>
+			<div class="info-value">{{ plan.notes }}</div>
+		</div>
+		{% endif %}
+
+		<div class="progress-section">
+			<div class="progress-header">Treatment Progress</div>
+			<div class="progress-bar-container">
+				<div class="progress-bar-fill" style="width: {{ plan.progress_percent }}%"></div>
+			</div>
+			<p class="progress-text">{{ plan.progress_percent }}% completed</p>
+			{% if not plan.cured %}
+			<form method="post" action="/treatment/update_progress/{{ plan.id }}" style="display:flex;gap:1rem;align-items:center;margin-top:1.5rem;">
+				<input type="number" name="progress_percent" placeholder="Update %" style="max-width:150px;" min="0" max="100">
+				<button class="btn primary">Update Progress</button>
+			</form>
+			{% else %}
+			<p style="color: var(--success); font-weight: 700; font-size: 1.25rem; margin-top: 1rem;">✓ Treatment marked as CURED</p>
+			{% endif %}
+		</div>
+
+		<div class="image-card">
+			<h4>🩺 Analyzed Skin Image</h4>
+			{% if plan.after_image_path %}
+				<img src="{{ plan.after_image_path }}" alt="Analyzed Skin Image">
+			{% else %}
+				<p>Image not available</p>
+			{% endif %}
+		</div>
+
+		<div class="action-buttons">
+			<a href="/treatment/report/pdf/{{ plan.id }}" class="btn primary">📄 Download PDF Report</a>
+		</div>
+	</div>
+</div>
+{% endblock %}

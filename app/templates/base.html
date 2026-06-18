@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>DermaAI - Smart Skin Care Assistant</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			--primary: #0A7AFF;
+			--primary-dark: #0561CC;
+			--primary-light: #E8F3FF;
+			--secondary: #00D9B8;
+			--success: #00C48C;
+			--danger: #FF647C;
+			--warning: #FFB547;
+			--dark: #1A1D29;
+			--gray-900: #2D3142;
+			--gray-700: #4F5B7A;
+			--gray-500: #8B95B0;
+			--gray-300: #D1D5E0;
+			--gray-100: #F5F7FA;
+			--white: #FFFFFF;
+			--shadow-sm: 0 2px 8px rgba(10, 122, 255, 0.08);
+			--shadow-md: 0 4px 16px rgba(10, 122, 255, 0.12);
+			--shadow-lg: 0 8px 32px rgba(10, 122, 255, 0.16);
+			--shadow-xl: 0 16px 48px rgba(10, 122, 255, 0.2);
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+			background: linear-gradient(135deg, #F5F7FA 0%, #E8F3FF 100%);
+			min-height: 100vh;
+			color: var(--gray-900);
+			line-height: 1.6;
+		}
+
+		/* Modern Header with Glass Effect */
+		.app-header {
+			background: rgba(255, 255, 255, 0.85);
+			backdrop-filter: blur(20px) saturate(180%);
+			-webkit-backdrop-filter: blur(20px) saturate(180%);
+			border-bottom: 1px solid rgba(10, 122, 255, 0.1);
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+			box-shadow: var(--shadow-sm);
+		}
+
+		.header-container {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 1rem 2rem;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.brand {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			font-family: 'Poppins', sans-serif;
+			font-size: 1.75rem;
+			font-weight: 800;
+			background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			letter-spacing: -0.5px;
+		}
+
+		.brand::before {
+			content: '🏥';
+			font-size: 2rem;
+			-webkit-text-fill-color: initial;
+		}
+
+		nav {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+		}
+
+		nav a {
+			color: var(--gray-700);
+			text-decoration: none;
+			padding: 0.75rem 1.5rem;
+			border-radius: 12px;
+			font-weight: 600;
+			font-size: 0.95rem;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			position: relative;
+			overflow: hidden;
+		}
+
+		nav a::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+			opacity: 0;
+			transition: opacity 0.3s;
+			z-index: -1;
+			border-radius: 12px;
+		}
+
+		nav a:hover {
+			color: var(--white);
+			transform: translateY(-2px);
+			box-shadow: var(--shadow-md);
+		}
+
+		nav a:hover::before {
+			opacity: 1;
+		}
+
+		nav a.active {
+			background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+			color: var(--white);
+			box-shadow: var(--shadow-md);
+		}
+
+		/* Main Content */
+		main {
+			max-width: 1400px;
+			margin: 2rem auto;
+			padding: 0 2rem;
+			animation: fadeIn 0.5s ease-out;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		/* Modern Button Styles */
+		.btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			padding: 0.875rem 2rem;
+			background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+			color: var(--white);
+			text-decoration: none;
+			border: none;
+			border-radius: 12px;
+			font-weight: 600;
+			font-size: 1rem;
+			cursor: pointer;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			box-shadow: var(--shadow-md);
+			font-family: inherit;
+		}
+
+		.btn:hover {
+			transform: translateY(-3px);
+			box-shadow: var(--shadow-lg);
+		}
+
+		.btn:active {
+			transform: translateY(-1px);
+		}
+
+		.btn.outline {
+			background: transparent;
+			color: var(--primary);
+			border: 2px solid var(--primary);
+			box-shadow: none;
+		}
+
+		.btn.outline:hover {
+			background: var(--primary);
+			color: var(--white);
+		}
+
+		.btn.primary {
+			background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+		}
+
+		.btn.success {
+			background: linear-gradient(135deg, var(--success) 0%, #00A875 100%);
+		}
+
+		.btn.danger {
+			background: linear-gradient(135deg, var(--danger) 0%, #E5445E 100%);
+		}
+
+		/* Modern Cards */
+		.card {
+			background: var(--white);
+			border-radius: 20px;
+			padding: 2rem;
+			box-shadow: var(--shadow-md);
+			border: 1px solid rgba(10, 122, 255, 0.08);
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		.card:hover {
+			box-shadow: var(--shadow-xl);
+			transform: translateY(-4px);
+		}
+
+		/* Alerts with Modern Design */
+		.alert {
+			padding: 1.25rem 1.5rem;
+			border-radius: 16px;
+			margin-bottom: 1.5rem;
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			font-weight: 500;
+			animation: slideDown 0.4s ease-out;
+			border-left: 4px solid;
+		}
+
+		@keyframes slideDown {
+			from {
+				opacity: 0;
+				transform: translateY(-20px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.alert::before {
+			font-size: 1.5rem;
+		}
+
+		.alert-success {
+			background: linear-gradient(135deg, #E6FAF5 0%, #D1F5EA 100%);
+			color: #00754A;
+			border-left-color: var(--success);
+		}
+
+		.alert-success::before {
+			content: '✓';
+		}
+
+		.alert-error {
+			background: linear-gradient(135deg, #FFE8EB 0%, #FFD6DB 100%);
+			color: #C41E3A;
+			border-left-color: var(--danger);
+		}
+
+		.alert-error::before {
+			content: '⚠';
+		}
+
+		.alert-warning {
+			background: linear-gradient(135deg, #FFF4E6 0%, #FFE8CC 100%);
+			color: #B85C00;
+			border-left-color: var(--warning);
+		}
+
+		.alert-warning::before {
+			content: 'ℹ';
+		}
+
+		/* Form Elements */
+		input, textarea, select {
+			width: 100%;
+			padding: 0.875rem 1.25rem;
+			border: 2px solid var(--gray-300);
+			border-radius: 12px;
+			font-size: 1rem;
+			font-family: inherit;
+			transition: all 0.3s;
+			background: var(--white);
+			color: var(--gray-900);
+		}
+
+		input:focus, textarea:focus, select:focus {
+			outline: none;
+			border-color: var(--primary);
+			box-shadow: 0 0 0 4px rgba(10, 122, 255, 0.1);
+		}
+
+		label {
+			display: block;
+			margin-bottom: 0.5rem;
+			font-weight: 600;
+			color: var(--gray-900);
+			font-size: 0.95rem;
+		}
+
+		/* Footer */
+		.app-footer {
+			background: var(--white);
+			border-top: 1px solid rgba(10, 122, 255, 0.1);
+			padding: 2rem;
+			text-align: center;
+			color: var(--gray-500);
+			margin-top: 4rem;
+		}
+
+		/* Responsive */
+		@media (max-width: 768px) {
+			.header-container {
+				flex-direction: column;
+				gap: 1rem;
+				padding: 1rem;
+			}
+
+			nav {
+				width: 100%;
+				justify-content: center;
+				flex-wrap: wrap;
+			}
+
+			main {
+				padding: 0 1rem;
+			}
+
+			.brand {
+				font-size: 1.5rem;
+			}
+		}
+	</style>
+</head>
+<body>
+	<header class="app-header">
+		<div class="header-container">
+			<div class="brand">DermaAI</div>
+			<nav>
+				<a href="/">Home</a>
+				<a href="/patients/new">Register</a>
+				<a href="/admin">Admin</a>
+				<a href="/treatments/dashboard">Dashboard</a>
+			</nav>
+		</div>
+	</header>
+	<main>
+		{% block content %}{% endblock %}
+	</main>
+	<footer class="app-footer">
+		<p>&copy; 2024 DermaAI - Smart Skin Care Assistant. All rights reserved.</p>
+	</footer>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Dataset
+dataset/
+dataset_clean/
+dataset_split/
+
+# Virtual Environment
+venv/
+venv_tf/
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# Database
+*.db
+
+# Generated Files
+app/static/uploads/
+app/static/reports/
+app/static/pdfs/
+
+# OS Files
+.DS_Store
+Thumbs.db
